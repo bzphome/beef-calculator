@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【金薯记烧洋芋】秘制牛肉串配料自动计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #d9534f;
+            text-align: center;
+            font-size: 22px;
+        }
+        .calculator {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f8f8f8;
+            position: sticky;
+            top: 0;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .input-section {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .note {
+            font-size: 13px;
+            color: #666;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>【金薯记烧洋芋】秘制牛肉串配料自动计算器</h1>
+    
+    <div class="calculator">
+        <div class="input-section">
+            <label for="beef-weight">输入实际牛肉重量 (克):</label>
+            <input type="number" id="beef-weight" placeholder="请输入牛肉重量" oninput="calculateIngredients()">
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>配料</th>
+                        <th>基准量</th>
+                        <th>实际用量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>牛肉</td>
+                        <td>1000 克</td>
+                        <td id="actual-beef">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>水</td>
+                        <td>50 克</td>
+                        <td id="water">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>酒</td>
+                        <td>5 克</td>
+                        <td id="wine">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>盐</td>
+                        <td>6 克</td>
+                        <td id="salt">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>鸡精</td>
+                        <td>5 克</td>
+                        <td id="chicken-essence">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>嫩肉粉</td>
+                        <td>10 克</td>
+                        <td id="tenderizer">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>东古耗油</td>
+                        <td>10 克</td>
+                        <td id="oyster-sauce">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>青花椒面</td>
+                        <td>2 克</td>
+                        <td id="green-pepper">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>胡辣椒面</td>
+                        <td>2 克</td>
+                        <td id="chili-powder">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>草果面</td>
+                        <td>2 克</td>
+                        <td id="caoguo">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>孜然粉</td>
+                        <td>1 克</td>
+                        <td id="cumin">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>八角面</td>
+                        <td>1 克</td>
+                        <td id="star-anise">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>烧烤香王</td>
+                        <td>10 克</td>
+                        <td id="bbq-seasoning">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>优质细辣椒粉</td>
+                        <td>10 克</td>
+                        <td id="fine-chili">0 克</td>
+                    </tr>
+                    <tr>
+                        <td>鸡蛋</td>
+                        <td>1 个</td>
+                        <td id="egg">0 个</td>
+                    </tr>
+                    <tr>
+                        <td>熟菜籽油</td>
+                        <td>30 克</td>
+                        <td id="rapeseed-oil">0 克</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <p class="note">* 根据输入的牛肉重量自动计算所有配料用量</p>
+    </div>
+
+    <script>
+        function calculateIngredients() {
+            // 获取输入的牛肉重量
+            const beefWeightInput = document.getElementById('beef-weight');
+            const beefWeight = parseFloat(beefWeightInput.value) || 0;
+            
+            // 基准比例 (1000克牛肉对应的配料量)
+            const baseBeef = 1000;
+            const ingredients = [
+                { id: "water", base: 50 },
+                { id: "wine", base: 5 },
+                { id: "salt", base: 6 },
+                { id: "chicken-essence", base: 5 },
+                { id: "tenderizer", base: 10 },
+                { id: "oyster-sauce", base: 10 },
+                { id: "green-pepper", base: 2 },
+                { id: "chili-powder", base: 2 },
+                { id: "caoguo", base: 2 },
+                { id: "cumin", base: 1 },
+                { id: "star-anise", base: 1 },
+                { id: "bbq-seasoning", base: 10 },
+                { id: "fine-chili", base: 10 },
+                { id: "egg", base: 1 },
+                { id: "rapeseed-oil", base: 30 }
+            ];
+            
+            // 计算比例因子
+            const ratio = beefWeight / baseBeef;
+            
+            // 格式化数字，去除不必要的小数点和0
+            function formatNumber(num) {
+                return num % 1 === 0 ? num.toString() : num.toString().replace(/\.?0+$/, '');
+            }
+            
+            // 更新牛肉重量显示
+            document.getElementById('actual-beef').textContent = formatNumber(beefWeight) + ' 克';
+            
+            // 计算并更新所有配料用量
+            ingredients.forEach(ing => {
+                const actualAmount = ing.base * ratio;
+                document.getElementById(ing.id).textContent = formatNumber(actualAmount) + ' 克';
+            });
+        }
+    </script>
+</body>
+</html>
